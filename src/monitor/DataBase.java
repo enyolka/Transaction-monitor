@@ -9,6 +9,7 @@ public class DataBase extends Base {
     // JDBC driver name and database URL
     final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
 //    final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    // C:\Program Files (x86)\MySQL\Connector J 8.0
     String DB_URL;
 
     //  Database credentials

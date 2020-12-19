@@ -10,15 +10,15 @@ public class Main {
         int test = 1;
 
         if (test == 1) {
-            for (int i = 2; i < 5; i++) {
+            for (int i = 2; i < 6; i++) {
                 test1.addStatement("INSERT INTO users VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
                 test2.addStatement("INSERT INTO users2 VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
             }
         }
         else if(test == 2){
-            for (int i = 2; i < 6; i++) {
+            for (int i = 2; i < 5; i++) {
                 test1.addStatement("DELETE FROM users WHERE ID = " + i + ";");
-                test2.addStatement("DELETE FROM users2 WHERE ID = " + i + ";");
+//                test2.addStatement("DELETE FROM users2 WHERE ID = " + i + ";");
             }
         }
         else if(test == 3){
