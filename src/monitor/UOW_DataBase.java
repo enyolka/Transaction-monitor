@@ -41,7 +41,8 @@ public class UOW_DataBase extends UOW{
             this.conn = DriverManager.getConnection(dataBase.getDbUrl(),dataBase.getUSER(),dataBase.getPASS());
             this.conn.setAutoCommit(autoCommit);
             stmt = this.conn.createStatement();
-            executeStatement(Boolean.TRUE);
+            reverse();
+            executeStatement();
 
         }catch(SQLException se){
             se.printStackTrace();
@@ -72,74 +73,194 @@ public class UOW_DataBase extends UOW{
     // oraz oddzielić do innej funkcji, gdy XD = 0 trzeba zatrzymać commit/zrobić roll_back!
     // plus potem połączyć wspólne cechy
 
-    public Integer executeStatement(Boolean save) throws SQLException {
-        Integer status = 10;
-        int re;
-        for (String statement: this.dataBase.statementsList) {
-            System.out.println(statement);
-            if (statement.toUpperCase().startsWith("INSERT")) {
-                String table_name = statement.substring(statement.indexOf("INTO") + 5, statement.toUpperCase().indexOf("VALUES") - 1);
-                String first = "SELECT * FROM " + table_name + " LIMIT 1;";
-                ResultSet rf = this.stmt.executeQuery(first);
-                ResultSetMetaData rfmd = rf.getMetaData();
-                String col = rfmd.getColumnName(1);
-                String state = "SELECT * FROM " + table_name + " WHERE " + col + " = " + statement.substring(statement.indexOf('(') + 1, statement.indexOf(','));
-                rs = this.stmt.executeQuery(state);
-                ResultSetMetaData rsmd = rs.getMetaData();
-                while (rs.next()) {
-                    int numColumns = rsmd.getColumnCount();
-                    Map<String, Object> tmp = new HashMap<String, Object>();
-                    for (int i = 1; i <= numColumns; i++) {
-                        String column_name = rsmd.getColumnName(i);
-                        tmp.put(column_name, rs.getObject(column_name));
-                    }
-                    if (save)register_insert(tmp, table_name);
-                }
-                this.stmt.executeUpdate(statement);
-            } else if (statement.toUpperCase().startsWith("UPDATE")) {
-                String table_name = statement.substring(statement.indexOf("UPDATE") + 7, statement.toUpperCase().indexOf("SET") - 1);
-                String state = "SELECT * FROM " + table_name + statement.substring(statement.toUpperCase().indexOf(" WHERE"));
-                System.out.println(state);
-                rs = this.stmt.executeQuery(state);
-                ResultSetMetaData rsmd = rs.getMetaData();
-                while (rs.next()) {
-                    int numColumns = rsmd.getColumnCount();
-                    Map<String, Object> tmp = new HashMap<String, Object>();
-                    for (int i = 1; i <= numColumns; i++) {
-                        String column_name = rsmd.getColumnName(i);
-                        tmp.put(column_name, rs.getObject(column_name));
-                    }
-                    if (save){register_update(tmp, table_name);}
-                }
-                this.stmt.executeUpdate(statement);
-            } else if (statement.toUpperCase().startsWith("DELETE")) {
-                String table_name = statement.substring(statement.indexOf("FROM") + 5, statement.toUpperCase().indexOf("WHERE") - 1);
-                String state = "SELECT * FROM " + table_name + statement.substring(statement.toUpperCase().indexOf(" WHERE"));
+//    public Integer executeStatement(Boolean save) throws SQLException {
+//        Integer status = 10;
+//        int re;
+//        for (String statement: this.dataBase.statementsList) {
+//            System.out.println(statement);
+//            if (statement.toUpperCase().startsWith("INSERT")) {
+//                String table_name = statement.substring(statement.indexOf("INTO") + 5, statement.toUpperCase().indexOf("VALUES") - 1);
+//                String first = "SELECT * FROM " + table_name + " LIMIT 1;";
+//                ResultSet rf = this.stmt.executeQuery(first);
+//                ResultSetMetaData rfmd = rf.getMetaData();
+//                String col = rfmd.getColumnName(1);
+//                String state = "SELECT * FROM " + table_name + " WHERE " + col + " = " + statement.substring(statement.indexOf('(') + 1, statement.indexOf(','));
+//                rs = this.stmt.executeQuery(state);
+//                ResultSetMetaData rsmd = rs.getMetaData();
+//                while (rs.next()) {
+//                    int numColumns = rsmd.getColumnCount();
+//                    Map<String, Object> tmp = new HashMap<String, Object>();
+//                    for (int i = 1; i <= numColumns; i++) {
+//                        String column_name = rsmd.getColumnName(i);
+//                        tmp.put(column_name, rs.getObject(column_name));
+//                    }
+//                    if (save)register_insert(tmp, table_name);
+//                }
+//                this.stmt.executeUpdate(statement);
+//            } else if (statement.toUpperCase().startsWith("UPDATE")) {
+//                String table_name = statement.substring(statement.indexOf("UPDATE") + 7, statement.toUpperCase().indexOf("SET") - 1);
+//                String state = "SELECT * FROM " + table_name + statement.substring(statement.toUpperCase().indexOf(" WHERE"));
 //                System.out.println(state);
-                rs = this.stmt.executeQuery(state);
-                ResultSetMetaData rsmd = rs.getMetaData();
-                while (rs.next()) {
-                    int numColumns = rsmd.getColumnCount();
+//                rs = this.stmt.executeQuery(state);
+//                ResultSetMetaData rsmd = rs.getMetaData();
+//                while (rs.next()) {
+//                    int numColumns = rsmd.getColumnCount();
+//                    Map<String, Object> tmp = new HashMap<String, Object>();
+//                    for (int i = 1; i <= numColumns; i++) {
+//                        String column_name = rsmd.getColumnName(i);
+//                        tmp.put(column_name, rs.getObject(column_name));
+//                    }
+//                    if (save){register_update(tmp, table_name);}
+//                }
+//                this.stmt.executeUpdate(statement);
+//            } else if (statement.toUpperCase().startsWith("DELETE")) {
+//                String table_name = statement.substring(statement.indexOf("FROM") + 5, statement.toUpperCase().indexOf("WHERE") - 1);
+//                String state = "SELECT * FROM " + table_name + statement.substring(statement.toUpperCase().indexOf(" WHERE"));
+////                System.out.println(state);
+//                rs = this.stmt.executeQuery(state);
+//                ResultSetMetaData rsmd = rs.getMetaData();
+//                while (rs.next()) {
+//                    int numColumns = rsmd.getColumnCount();
+//
+//                    Map<String, Object> tmp = new HashMap<String, Object>();
+//                    for (int i = 1; i <= numColumns; i++) {
+////                        System.out.println(rsmd.getColumnName(i));
+//                        String column_name = rsmd.getColumnName(i);
+////                        System.out.println(rs.getObject(column_name));
+//                        tmp.put(column_name, rs.getObject(column_name));
+//                    }
+//                    if (save){
+//                        register_delete(tmp, table_name);
+//                    }
+//                }
+////                System.out.println(statement);
+//                int xd = this.stmt.executeUpdate(statement);
+//                System.out.println("XD = "+xd);
+//            }
+//        }
+//        return status;
+//    }
+//    Integer executeStatement (List<String> statementsList, Boolean save) throws SQLException {
+//        Integer status = 0;
+//        for (String statement: statementsList) {
+//            if (statement.toUpperCase().startsWith("INSERT")) {
+//                String table_name = statement.substring(statement.indexOf("INTO") + 5, statement.toUpperCase().indexOf("VALUES") - 1);
+//                String first = "SELECT * FROM " + table_name + " LIMIT 1;";
+//                ResultSet rf = this.stmt.executeQuery(first);
+//                ResultSetMetaData rfmd = rf.getMetaData();
+//                String col = rfmd.getColumnName(1);
+//                String state = "SELECT * FROM " + table_name + " WHERE " + col + " = " + statement.substring(statement.indexOf('(') + 1, statement.indexOf(','));
+//                rs = this.stmt.executeQuery(state);
+//                ResultSetMetaData rsmd = rs.getMetaData();
+//                while (rs.next()) {
+//                    int numColumns = rsmd.getColumnCount();
+//                    Map<String, Object> tmp = new HashMap<String, Object>();
+//                    for (int i = 1; i <= numColumns; i++) {
+//                        String column_name = rsmd.getColumnName(i);
+//                        tmp.put(column_name, rs.getObject(column_name));
+//                    }
+//                    if (save) register_insert(tmp, table_name);
+//                }
+//                this.stmt.executeUpdate(statement);
+//            } else if (statement.toUpperCase().startsWith("UPDATE")) {
+//                String table_name = statement.substring(statement.indexOf("UPDATE") + 7, statement.toUpperCase().indexOf("SET") - 1);
+//                String state = "SELECT * FROM " + table_name + statement.substring(statement.toUpperCase().indexOf("WHERE"));
+//                rs = this.stmt.executeQuery(state);
+//                ResultSetMetaData rsmd = rs.getMetaData();
+//                while (rs.next()) {
+//                    int numColumns = rsmd.getColumnCount();
+//                    Map<String, Object> tmp = new HashMap<String, Object>();
+//                    for (int i = 1; i <= numColumns; i++) {
+//                        String column_name = rsmd.getColumnName(i);
+//                        tmp.put(column_name, rs.getObject(column_name));
+//                    }
+//                    if (save) register_update(tmp, table_name);
+//                }
+//                this.stmt.executeUpdate(statement);
+//            } else if (statement.toUpperCase().startsWith("DELETE")) {
+//                String table_name = statement.substring(statement.indexOf("FROM") + 5, statement.toUpperCase().indexOf("WHERE") - 1);
+//                String state = "SELECT * FROM " + table_name + statement.substring(statement.toUpperCase().indexOf("WHERE"));
+//                rs = this.stmt.executeQuery(state);
+//                ResultSetMetaData rsmd = rs.getMetaData();
+//                while (rs.next()) {
+//                    int numColumns = rsmd.getColumnCount();
+//                    Map<String, Object> tmp = new HashMap<String, Object>();
+//                    for (int i = 1; i <= numColumns; i++) {
+////                        System.out.println(rsmd.getColumnName(i));
+//                        String column_name = rsmd.getColumnName(i);
+////                        System.out.println(rs.getObject(column_name));
+//                        tmp.put(column_name, rs.getObject(column_name));
+//                    }
+//                    if (save){
+//                        register_delete(tmp, table_name);
+//                    }
+//                }
+////                System.out.println(statement);
+//                this.stmt.executeUpdate(statement);
+//            }
+//        }
+//        return status;
+//    }
 
-                    Map<String, Object> tmp = new HashMap<String, Object>();
-                    for (int i = 1; i <= numColumns; i++) {
-//                        System.out.println(rsmd.getColumnName(i));
-                        String column_name = rsmd.getColumnName(i);
-//                        System.out.println(rs.getObject(column_name));
-                        tmp.put(column_name, rs.getObject(column_name));
-                    }
-                    if (save){
-                        register_delete(tmp, table_name);
-                    }
+    Integer reverse () throws SQLException {
+    Integer status = 0;
+    for (String statement: this.dataBase.statementsList) {
+        if (statement.toUpperCase().startsWith("INSERT")) {
+            String table_name = statement.substring(statement.indexOf("INTO") + 5, statement.toUpperCase().indexOf("VALUES") - 1);
+            String first = "SELECT * FROM " + table_name + " LIMIT 1;";
+            ResultSet rf = this.stmt.executeQuery(first);
+            ResultSetMetaData rfmd = rf.getMetaData();
+            String col = rfmd.getColumnName(1);
+            String state = "SELECT * FROM " + table_name + " WHERE " + col + " = " + statement.substring(statement.indexOf('(') + 1, statement.indexOf(','));
+            rs = this.stmt.executeQuery(state);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            while (rs.next()) {
+                int numColumns = rsmd.getColumnCount();
+                Map<String, Object> tmp = new HashMap<String, Object>();
+                for (int i = 1; i <= numColumns; i++) {
+                    String column_name = rsmd.getColumnName(i);
+                    tmp.put(column_name, rs.getObject(column_name));
                 }
-//                System.out.println(statement);
-                int xd = this.stmt.executeUpdate(statement);
-                System.out.println("XD = "+xd);
+                register_insert(tmp, table_name);
             }
+        } else if (statement.toUpperCase().startsWith("UPDATE")) {
+            String table_name = statement.substring(statement.indexOf("UPDATE") + 7, statement.toUpperCase().indexOf("SET") - 1);
+            String state = "SELECT * FROM " + table_name + ' ' + statement.substring(statement.toUpperCase().indexOf("WHERE"));
+            rs = this.stmt.executeQuery(state);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            while (rs.next()) {
+                int numColumns = rsmd.getColumnCount();
+                Map<String, Object> tmp = new HashMap<String, Object>();
+                for (int i = 1; i <= numColumns; i++) {
+                    String column_name = rsmd.getColumnName(i);
+                    tmp.put(column_name, rs.getObject(column_name));
+                }
+                register_update(tmp, table_name);
+            }
+        } else if (statement.toUpperCase().startsWith("DELETE")) {
+            String table_name = statement.substring(statement.indexOf("FROM") + 5, statement.toUpperCase().indexOf("WHERE") - 1);
+            String state = "SELECT * FROM " + table_name + ' ' + statement.substring(statement.toUpperCase().indexOf("WHERE"));
+//            System.out.println(state);
+            rs = this.stmt.executeQuery(state);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            while (rs.next()) {
+                int numColumns = rsmd.getColumnCount();
+                Map<String, Object> tmp = new HashMap<String, Object>();
+                for (int i = 1; i <= numColumns; i++) {
+//                        System.out.println(rsmd.getColumnName(i));
+                    String column_name = rsmd.getColumnName(i);
+//                        System.out.println(rs.getObject(column_name));
+                    tmp.put(column_name, rs.getObject(column_name));
+                }
+                register_delete(tmp, table_name);
+            }
+//                System.out.println(statement);
         }
-        return status;
     }
-    Integer executeStatement (List<String> statementsList, Boolean save) throws SQLException {
+    return status;
+}
+
+    Integer reverse (List<String> statementsList) throws SQLException {
         Integer status = 0;
         for (String statement: statementsList) {
             if (statement.toUpperCase().startsWith("INSERT")) {
@@ -158,12 +279,11 @@ public class UOW_DataBase extends UOW{
                         String column_name = rsmd.getColumnName(i);
                         tmp.put(column_name, rs.getObject(column_name));
                     }
-                    if (save) register_insert(tmp, table_name);
+                    register_insert(tmp, table_name);
                 }
-                this.stmt.executeUpdate(statement);
             } else if (statement.toUpperCase().startsWith("UPDATE")) {
                 String table_name = statement.substring(statement.indexOf("UPDATE") + 7, statement.toUpperCase().indexOf("SET") - 1);
-                String state = "SELECT * FROM " + table_name + statement.substring(statement.toUpperCase().indexOf("WHERE"));
+                String state = "SELECT * FROM " + table_name  + ' '+ statement.substring(statement.toUpperCase().indexOf("WHERE"));
                 rs = this.stmt.executeQuery(state);
                 ResultSetMetaData rsmd = rs.getMetaData();
                 while (rs.next()) {
@@ -173,9 +293,8 @@ public class UOW_DataBase extends UOW{
                         String column_name = rsmd.getColumnName(i);
                         tmp.put(column_name, rs.getObject(column_name));
                     }
-                    if (save) register_update(tmp, table_name);
+                    register_update(tmp, table_name);
                 }
-                this.stmt.executeUpdate(statement);
             } else if (statement.toUpperCase().startsWith("DELETE")) {
                 String table_name = statement.substring(statement.indexOf("FROM") + 5, statement.toUpperCase().indexOf("WHERE") - 1);
                 String state = "SELECT * FROM " + table_name + statement.substring(statement.toUpperCase().indexOf("WHERE"));
@@ -190,15 +309,33 @@ public class UOW_DataBase extends UOW{
 //                        System.out.println(rs.getObject(column_name));
                         tmp.put(column_name, rs.getObject(column_name));
                     }
-                    if (save){
-                        register_delete(tmp, table_name);
-                    }
+                    register_delete(tmp, table_name);
                 }
 //                System.out.println(statement);
-                this.stmt.executeUpdate(statement);
             }
         }
         return status;
+    }
+
+
+    void executeStatement(List<String> statementsList){
+        for (String statement: statementsList) {
+            try {
+                this.stmt.executeUpdate(statement);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+    }
+
+    void executeStatement(){
+        for (String statement: this.dataBase.statementsList) {
+            try {
+                this.stmt.executeUpdate(statement);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -264,13 +401,13 @@ public class UOW_DataBase extends UOW{
         // Rollback changes
         int failed = 40;
 
-        try {
+        //try {
             System.out.println("ROLLBACK 2");
-            executeStatement(caretaker.restore(), Boolean.FALSE);
-        } catch (SQLException throwables) {
-            failed = -40;
-            throwables.printStackTrace();
-        }
+            executeStatement(caretaker.restore());
+       // } catch (SQLException throwables) {
+     //       failed = -40;
+   //         throwables.printStackTrace();
+ //       }
         return failed;
     }
 }

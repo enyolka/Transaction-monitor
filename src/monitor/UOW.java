@@ -10,7 +10,7 @@ public abstract class UOW{
 
     abstract int finalizeTransaction();
 
-    abstract Integer executeStatement(List<String> statementsList, Boolean save) throws SQLException;
+//    abstract Integer executeStatement(List<String> statementsList, Boolean save) throws SQLException;
 
     abstract int register_insert(Map<String, Object> tmp, String table_name);
 
@@ -24,6 +24,6 @@ public abstract class UOW{
 
     abstract int rollback2phase();
 
-    public abstract Integer executeStatement(Boolean aFalse) throws SQLException;
+//    public abstract Integer executeStatement(Boolean aFalse) throws SQLException;
 }
 

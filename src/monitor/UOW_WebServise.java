@@ -22,10 +22,10 @@ public class UOW_WebServise extends UOW
 
     public int finalizeTransaction (  ){return 0;}
 
-    @Override
-    Integer executeStatement(List<String> statementsList, Boolean save) throws SQLException {
-        return null;
-    }
+//    @Override
+//    Integer executeStatement(List<String> statementsList, Boolean save) throws SQLException {
+//        return null;
+//    }
 
     @Override
     int register_insert(Map<String, Object> tmp, String table_name) {
@@ -49,9 +49,9 @@ public class UOW_WebServise extends UOW
     @Override
     int rollback2phase (  ){return 0;}
 
-    @Override
-    public Integer executeStatement(Boolean aFalse) throws SQLException {
-        return null;
-    }
+//    @Override
+//    public Integer executeStatement(Boolean aFalse) throws SQLException {
+//        return null;
+//    }
 }
 

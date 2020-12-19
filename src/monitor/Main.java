@@ -7,7 +7,7 @@ public class Main {
         DataBase test2 = new DataBase("danwarl2","u8YNn32Zr5F8VLUx", "jdbc:mysql://mysql.agh.edu.pl:3306/danwarl2");
 
 
-        int test = 1;
+        int test = 3 ;
 
         if (test == 1) {
             for (int i = 2; i < 6; i++) {
@@ -16,9 +16,9 @@ public class Main {
             }
         }
         else if(test == 2){
-            for (int i = 2; i < 5; i++) {
+            for (int i = 2; i < 6; i++) {
                 test1.addStatement("DELETE FROM users WHERE ID = " + i + ";");
-//                test2.addStatement("DELETE FROM users2 WHERE ID = " + i + ";");
+                test2.addStatement("DELETE FROM users2 WHERE ID = " + i + ";");
             }
         }
         else if(test == 3){
@@ -27,6 +27,9 @@ public class Main {
                 test2.addStatement("UPDATE users2 SET user2 = 'user" + 5 +"' WHERE ID = " + i + ";");
             }
         }
+
+
+
 
 
         try {
