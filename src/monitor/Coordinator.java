@@ -1,13 +1,11 @@
 package monitor;
 
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class Coordinator {
 
@@ -15,7 +13,7 @@ public class Coordinator {
      ExecutorService executor;
      List<Future<Integer>> resultList = null;
 
-     Coordinator() throws InterruptedException {
+     Coordinator() {
 
      }
 

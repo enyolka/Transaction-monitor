@@ -12,13 +12,9 @@ public class Memento_WS
 
      String url;
 
-     String table_name;
-
-     Memento_WS (List<Object> values, String type, String url, String table_name){
+     Memento_WS (List<Object> values, String type){
           this.values = values;
           this.type = type;
-          this.url = url;
-          this.table_name = table_name;
      }
 }
 

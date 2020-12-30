@@ -14,7 +14,7 @@ public class TransactionWrapper implements Callable<Integer>
             uow = new UOW_DataBase(base);
     }
 
-    public TransactionWrapper (WebService base) throws ClassNotFoundException {
+    public TransactionWrapper (WebService base) {
             uow = new UOW_WebServise(base);
     }
 

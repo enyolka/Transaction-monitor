@@ -14,9 +14,15 @@ public abstract class UOW{
 
     abstract int register_insert(Map<String, Object> tmp, String table_name);
 
+    abstract int register_insert(List<Object> tmp);
+
     abstract int register_update(Map<String, Object> tmp, String table_name);
 
+    abstract int register_update(List<Object> tmp);
+
     abstract int register_delete(Map<String, Object> tmp, String table_name);
+
+    abstract int register_delete(List<Object> tmp);
 
     abstract int commit();
 

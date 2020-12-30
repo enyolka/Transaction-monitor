@@ -7,6 +7,7 @@ public class Memento_DB
 
 {
 
+    // zamienić na listę
      Map<String, Object> values;
 
      String type;

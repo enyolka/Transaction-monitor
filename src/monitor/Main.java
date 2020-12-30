@@ -6,8 +6,12 @@ public class Main {
         DataBase test1 = new DataBase("danwarlo","ESibZTBDZSXKKrPy", "jdbc:mysql://mysql.agh.edu.pl:3306/danwarlo");
         DataBase test2 = new DataBase("danwarl2","u8YNn32Zr5F8VLUx", "jdbc:mysql://mysql.agh.edu.pl:3306/danwarl2");
 
+        WebService testw = new WebService("url");
 
-        int test = 3 ;
+        //URL urlForGetRequest = new URL("http://localhost:8080/");
+        //HttpURLConnection myConnection = (HttpURLConnection) urlForGetRequest.openConnection();
+
+        int test =  ;
 
         if (test == 1) {
             for (int i = 2; i < 6; i++) {
@@ -28,7 +32,7 @@ public class Main {
             }
         }
 
-
+        testw.addStatement("polecenie?name=WART");
 
 
 
