@@ -4,18 +4,26 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Array;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import com.google.json.Gson;
-
-import com.mysql.cj.xdevapi.JsonParser;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
+//import com.google.*;
+//import com.google.gson.JsonObject;
+//import netscape.javascript.JSObject;
+import jdk.internal.org.jline.terminal.spi.JansiSupport;
+import netscape.javascript.JSObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+//import net.sf.json.JSONArray;
+//import net.sf.json.JSONObject;
+import org.json.simple.parser.ParseException;
+import org.json.*;
 public class UOW_WebServise extends UOW{
 
      Caretaker_WS caretaker;
@@ -29,7 +37,7 @@ public class UOW_WebServise extends UOW{
 
     public UOW_WebServise (WebService webService){
         this.webService = webService;
-        this.caretaker = new Caretaker_WS();
+        this.caretaker = new Caretaker_WS(this.webService.url);
     }
 
     public int getStatus (  ){return 0;}
@@ -57,13 +65,19 @@ public class UOW_WebServise extends UOW{
     Integer reverse () throws MalformedURLException {
         Integer status = 0;
         for (String statement: this.webService.statementsList) {
-            if (statement.toUpperCase().startsWith("ADD")) {
-                String id = statement.substring(statement.indexOf("?") , statement.indexOf("&"));
+            if (statement.startsWith("add")) {
+                String id = statement.substring(statement.indexOf("?"));
+                String[] r = id.split("&");
+                List<Object> values = new ArrayList<Object>(Arrays.asList(r));
+                register_insert(values);
+            }
+            else {
+                String id = statement.substring(statement.indexOf("?"), statement.indexOf("&"));
                 String new_url = this.webService.getURL() + "getId?" + id;
                 URL statement_url = new URL(new_url);
                 try {
                     connection = (HttpURLConnection) statement_url.openConnection();
-                    connection.setRequestMethod("POST");
+                    connection.setRequestMethod("post");
                     int responseCode = connection.getResponseCode();
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -72,38 +86,37 @@ public class UOW_WebServise extends UOW{
 
                         while ((inputLine = in.readLine()) != null) {
                             response.append(inputLine);
-                        } in .close();
-                        String output = response.toString();
-                        JsonParser parser = new JsonParser();
-                        JSONArray array = new JSONArray();// new JsonParser().parse(output).getAsJsonArray();
-                        array = parser.parse(output);
+                        }
+                        in.close();
+                        String data = response.toString();
+                        data = data.replace("[", "");
+                        data = data.replace("]", "");
+                        data = data.replace("\"", "");
 
+                        String[] data2 = data.split("}");
 
+                        for (String row : data2) {
+                            row = row.replace("{", "");
+                            row = row.replace("}", "");
+                            row = row.replace(":", "=");
 
-                        System.out.println(response.toString());
+                            String[] r = row.split(",");
+
+                            List<Object> values = new ArrayList<Object>(Arrays.asList(r));
+
+                            if (statement.startsWith("delete")) {
+                                register_delete(values);
+                            } else if (statement.startsWith("update")) {
+                                register_delete(values);
+                            }
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                String data = ".";
-
-//                data = data.replace("[", "");
-//                data = data.replace("{", "");
-//                data = data.replace("}", "");
-//                data = data.replace("]", "");
-//                data = data.replace("\"", "");
-
-
-//                String state = statement.substring(statement.indexOf("[") , statement.indexOf("]"));
-                String[] tab = data.split(",");
-
-                List<Object> values = new ArrayList<Object>(Arrays.asList(tab));
-                register_insert(values);
-
             }
-        }
-
+            }
         return status;
     }
 
@@ -136,19 +149,19 @@ public class UOW_WebServise extends UOW{
 
     @Override
     int register_insert(List<Object> tmp) {
-        caretaker.register(tmp,"ADD");
+        caretaker.register(tmp,"add");
         return 0;
     }
 
     @Override
     int register_update(List<Object> tmp) {
-        caretaker.register(tmp,"PUT");
+        caretaker.register(tmp,"update");
         return 0;
     }
 
     @Override
     int register_delete(List<Object> tmp) {
-        caretaker.register(tmp,"DELETE");
+        caretaker.register(tmp,"delete");
         return 0;
     }
 
@@ -169,12 +182,52 @@ public class UOW_WebServise extends UOW{
         return 0;
     }
 
-    public int commit (  ){return 0;}
+    public int commit (){
+        int failed = 20;
+//        System.out.println("nie dziala");
+        try{
+            System.out.println("COMMIT");
+            executeStatement();
+        } catch(Exception e){
+            //Handle errors for Class.forName
+            e.printStackTrace();
+            failed = -20;
+        }
+        return failed;
+    }
 
-    public int rollback (  ){return 0;}
+    int rollback ( ){
+        // Rollback changes
+        int failed = 30;
+        try{
+            System.out.println("ROLLBACK");
+            this.conn.rollback();
+        }catch(SQLException se){
+            //Handle errors for JDBC
+            se.printStackTrace();
+            failed = -30;
+        }catch(Exception e){
+            //Handle errors for Class.forName
+            e.printStackTrace();
+            failed = -30;
+        }
+        return failed;
+    }
 
     @Override
-    int rollback2phase (  ){return 0;}
+    int rollback2phase (  ){
+        // Rollback changes
+        int failed = 40;
+
+        //try {
+        System.out.println("ROLLBACK 2");
+        executeStatement(caretaker.restore());
+        // } catch (SQLException throwables) {
+        //       failed = -40;
+        //         throwables.printStackTrace();
+        //       }
+        return failed;
+    }
 
 //    @Override
 //    public Integer executeStatement(Boolean aFalse) throws SQLException {

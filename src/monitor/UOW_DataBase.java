@@ -66,7 +66,7 @@ public class UOW_DataBase extends UOW{
         return failed;
     }
 
-
+// TODO: POPRAWI INSERT
     Integer reverse () throws SQLException {
         Integer status = 0;
         for (String statement: this.dataBase.statementsList) {
