@@ -69,7 +69,7 @@ public class Caretaker_WS{
 
 
     /**
-     * Clear.
+     * Clear the list of stored memento objects.
      */
     void clear (){
         list.clear();
