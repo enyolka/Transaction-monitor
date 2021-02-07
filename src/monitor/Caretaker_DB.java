@@ -29,8 +29,23 @@ public class Caretaker_DB{
         List<String> SQL_R = new ArrayList<String>();
         for(Memento_DB element: list){
             if (element.type.equals("INSERT")){
-                SQL_R.add("DELETE FROM " + element.table_name + " WHERE " +
-                        element.values.keySet().toArray()[0] + " = " + element.values.values().toArray()[0] + ";");
+
+                StringBuilder text = new StringBuilder();
+
+                for (int i = 0; i < element.values.size()-1; i++) {
+                    text.append(element.values.keySet().toArray()[i]);
+                    text.append("=");
+                    text.append(element.values.values().toArray()[i]);
+                    text.append(" AND ");
+                }
+
+                text.append(element.values.keySet().toArray()[element.values.size()-1]);
+                text.append("=");
+                text.append(element.values.values().toArray()[element.values.size()-1]);
+                text.append(" ");
+
+                SQL_R.add("DELETE FROM " + element.table_name + " WHERE " + text + ";");
+
             }else if (element.type.equals("UPDATE")){
                 StringBuilder text = new StringBuilder();
 

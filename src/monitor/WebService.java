@@ -24,6 +24,9 @@ public class WebService{
      * @param url the url
      */
     public WebService(String  url ){
+        if (!url.endsWith("/")){
+            url = url + "/";
+        }
         this.url = url;
     }
 

@@ -60,21 +60,23 @@ public class UOW_DataBase extends UOW{
      */
     int startTransaction(){
         int failed = 10;
-        try{
+        try {
             System.out.println("START DB");
             Class.forName(dataBase.getJdbcDriver());
-            this.conn = DriverManager.getConnection(dataBase.getDbUrl(),dataBase.getUSER(),dataBase.getPASS());
+            this.conn = DriverManager.getConnection(dataBase.getDbUrl(), dataBase.getUSER(), dataBase.getPASS());
             this.conn.setAutoCommit(autoCommit);
             stmt = this.conn.createStatement();
             this.stmt.executeUpdate("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;");
             reverse();
             executeStatement();
-
-        }catch(SQLException se){
-            se.printStackTrace();
+        }catch(NullPointerException e) {
+            failed = -10;
+            //System.out.println("NullPointerException");
+        }catch(SQLException se) {
+            //se.printStackTrace();
             failed = -10;
         }catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             failed = -10;
         }
         if (!statement_status){
@@ -90,14 +92,22 @@ public class UOW_DataBase extends UOW{
      */
     int finalizeTransaction(){
         int failed = 50;
-        try{
-            System.out.println("FINALIZE DB");
-            stmt.close();
-            conn.close();
-        }catch(SQLException se2) {
-            se2.printStackTrace();
-            failed = -50;
+        if(this.conn != null) {
+            try{
+                System.out.println("FINALIZE DB");
+                stmt.close();
+                conn.close();
+            }catch(SQLException se2) {
+                System.out.println("FINALIZE DB failed");
+//                se2.printStackTrace();
+                failed = -50;
+            }catch(Exception e){
+                System.out.println("FINALIZE DB failed");
+                //e.printStackTrace();
+                failed = -50;
+            }
         }
+
         caretaker.clear();
         return failed;
     }
@@ -169,6 +179,7 @@ public class UOW_DataBase extends UOW{
     void executeStatement(List<String> statementsList){
         for (String statement: statementsList) {
             try {
+                System.out.println(dataBase.getDbUrl() + " " + statement);
                 this.stmt.executeUpdate(statement);
             } catch (SQLException throwables) {
                 //throwables.printStackTrace();
@@ -183,6 +194,7 @@ public class UOW_DataBase extends UOW{
     void executeStatement(){
         for (String statement: this.dataBase.statementsList) {
             try {
+                System.out.println(dataBase.getDbUrl() + " " + statement);
                 this.stmt.executeUpdate(statement);
             } catch (SQLException throwables) {
                 //throwables.printStackTrace();
@@ -227,10 +239,10 @@ public class UOW_DataBase extends UOW{
             System.out.println("COMMIT DB");
             this.conn.commit();
         }catch(SQLException se){
-            se.printStackTrace();
+//            se.printStackTrace();
             failed = -20;
         }catch(Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             failed = -20;
         }
         return failed;
@@ -242,11 +254,9 @@ public class UOW_DataBase extends UOW{
         try{
             System.out.println("ROLLBACK DB");
             this.conn.rollback();
-        }catch(SQLException se){
-            se.printStackTrace();
-            failed = -30;
-        }catch(Exception e){
-            e.printStackTrace();
+        } catch(Exception se) {
+            System.out.println("ROLLBACK DB failed");
+            //se.printStackTrace();
             failed = -30;
         }
         return failed;

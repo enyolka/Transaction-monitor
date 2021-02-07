@@ -19,7 +19,7 @@ public class Coordinator {
      /**
       * The Transaction wrapper list.
       */
-     List<TransactionWrapper> TransactionWrapperList = new ArrayList<TransactionWrapper>();
+     List<TransactionWrapper> TransactionWrapperList = new ArrayList<>();
      /**
       * list of the transaction components
       */
@@ -64,7 +64,7 @@ public class Coordinator {
       * Execute program using threads.
       */
      void execute(){
-          executor = Executors.newFixedThreadPool(2);
+          executor = Executors.newFixedThreadPool(this.TransactionWrapperList.size());
           try {
                resultList = executor.invokeAll(TransactionWrapperList);
           } catch (InterruptedException e) {
@@ -82,6 +82,7 @@ public class Coordinator {
           int i = 0;
           for (Future<Integer> future : resultList) {
                try {
+
                     Integer result = future.get();
 
                     if(result == 20){
@@ -131,9 +132,7 @@ public class Coordinator {
                     else{
                          TransactionWrapperList.get(i).mode = 5;
                     }
-               } catch (InterruptedException e) {
-                    e.printStackTrace();
-               } catch (ExecutionException e) {
+               } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                }
                i++;

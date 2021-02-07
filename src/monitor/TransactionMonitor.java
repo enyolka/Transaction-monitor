@@ -25,6 +25,7 @@ public class TransactionMonitor{
      * @param dataBase the data base
      */
     public void addDataBase(DataBase dataBase){
+
         this.coordinator.TransactionWrapperList.add(new TransactionWrapper(dataBase));
     }
 

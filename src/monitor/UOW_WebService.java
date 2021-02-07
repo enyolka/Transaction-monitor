@@ -44,6 +44,8 @@ public class UOW_WebService extends UOW{
      */
     boolean statement_status = true;
 
+    String transactionID;
+
 
     /**
      * Instantiates a new Uow web service.
@@ -64,9 +66,39 @@ public class UOW_WebService extends UOW{
         try{
             System.out.println("START WS");
             reverse();
-            this.index = executeStatement();
+            try {
+                String new_url = this.webService.getURL() + "beginTransaction";
+                URL statement_url = new URL(new_url);
+                connection = (HttpURLConnection) statement_url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setReadTimeout(400000);
+                connection.setConnectTimeout(10000);
+                int responseCode = connection.getResponseCode();
+                if (responseCode != HttpURLConnection.HTTP_OK){
+                    failed = -10;
+                }else{
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String inputLine;
+                    StringBuilder response = new StringBuilder();
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+                    this.transactionID = response.toString();
+                }
+
+            } catch (MalformedURLException e) {
+                failed = -10;
+                //e.printStackTrace();
+            } catch (IOException e) {
+                failed = -10;
+                //e.printStackTrace();
+            }
+            if(failed == 10) {
+                this.index = executeStatement();
+            }
         }catch(Exception e){
-            e.printStackTrace();
+//            e.printStackTrace();
             failed = -10;
         }
         if (!statement_status){
@@ -81,9 +113,23 @@ public class UOW_WebService extends UOW{
      * @return the status as integer value positive value for success, negative value for fail
      */
     public int finalizeTransaction (  ){
-        System.out.println("FINALIZE WS");
+        int failed = 50;
+        try{
+            System.out.println("FINALIZE WS");
+            URL statement_url = new URL(webService.getURL() + "finalizeTransaction" + "?transactionID=" + this.transactionID);
+            connection = (HttpURLConnection) statement_url.openConnection();
+            connection.setRequestMethod("POST");
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK){
+                failed = -50;
+            }
+        } catch(Exception e){
+            System.out.println("FINALIZE WS failed");
+//            e.printStackTrace();
+            failed = -50;
+        }
         caretaker.clear();
-        return 50;
+        return failed;
     }
 
     /**
@@ -112,7 +158,7 @@ public class UOW_WebService extends UOW{
 
                 String new_url = this.webService.getURL() + "getId" + id;
                 URL statement_url = new URL(new_url);
-                System.out.println(new_url);
+//                System.out.println(new_url);
                 try {
                     connection = (HttpURLConnection) statement_url.openConnection();
                     connection.setRequestMethod("POST");
@@ -141,7 +187,7 @@ public class UOW_WebService extends UOW{
                             String[] r = row.split(",");
 
                             List<Object> values = new ArrayList<Object>(Arrays.asList(r));
-                            System.out.println(values);
+//                            System.out.println(values);
 
                             if (statement.startsWith("delete")) {
                                 register_delete(values);
@@ -151,7 +197,9 @@ public class UOW_WebService extends UOW{
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                }catch (Exception e) {
+//                    e.printStackTrace();
                 }
 
             }
@@ -169,7 +217,8 @@ public class UOW_WebService extends UOW{
         int i = 0;
         for (String statement: this.webService.statementsList) {
             try {
-                String new_url = this.webService.getURL() + statement;
+                String new_url = this.webService.getURL() + statement + "&transactionID=" + this.transactionID;
+                System.out.println(new_url);
                 URL statement_url = new URL(new_url);
                 connection = (HttpURLConnection) statement_url.openConnection();
                 connection.setRequestMethod("POST");
@@ -200,7 +249,8 @@ public class UOW_WebService extends UOW{
     void executeStatement(List<String> statementsList){
         for (String statement: statementsList.subList(0,getIndex())) {
             try {
-                URL statement_url = new URL(statement);
+                URL statement_url = new URL(statement + "&transactionID=" + this.transactionID);
+                System.out.println(statement_url.toString());
                 connection = (HttpURLConnection) statement_url.openConnection();
                 connection.setRequestMethod("POST");
                 int responseCode = connection.getResponseCode();
@@ -253,7 +303,7 @@ public class UOW_WebService extends UOW{
         try{
             System.out.println("COMMIT WS");
 
-            URL statement_url = new URL(webService.getURL() + "commit");
+            URL statement_url = new URL(webService.getURL() + "commit" + "?transactionID=" + this.transactionID);
             connection = (HttpURLConnection) statement_url.openConnection();
             connection.setRequestMethod("POST");
             int responseCode = connection.getResponseCode();
@@ -262,7 +312,7 @@ public class UOW_WebService extends UOW{
             }
         } catch(Exception e){
             System.out.println("COMMIT WS failed");
-            e.printStackTrace();
+//            e.printStackTrace();
             failed = -20;
         }
         return failed;
@@ -280,7 +330,7 @@ public class UOW_WebService extends UOW{
             System.out.println("ROLLBACK WS");
             executeStatement(caretaker.restore());
             setIndex(0);
-            URL statement_url = new URL(webService.getURL() + "rollback");
+            URL statement_url = new URL(webService.getURL() + "rollback" + "?transactionID=" + this.transactionID);
             connection = (HttpURLConnection) statement_url.openConnection();
             connection.setRequestMethod("POST");
             int responseCode = connection.getResponseCode();
@@ -289,7 +339,7 @@ public class UOW_WebService extends UOW{
             }
         }catch(Exception e){
             System.out.println("ROLLBACK WS failed");
-            e.printStackTrace();
+//            e.printStackTrace();
             failed = -30;
         }
         return failed;
@@ -305,7 +355,7 @@ public class UOW_WebService extends UOW{
 
         URL statement_url;
         try {
-            statement_url = new URL(webService.getURL() + "rollback");
+            statement_url = new URL(webService.getURL() + "rollback" + "?transactionID=" + this.transactionID);
             connection = (HttpURLConnection) statement_url.openConnection();
             connection.setRequestMethod("POST");
             int responseCode = connection.getResponseCode();
@@ -313,11 +363,11 @@ public class UOW_WebService extends UOW{
                 failed = -40;
             }
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         } catch (ProtocolException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
         return failed;
