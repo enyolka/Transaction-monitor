@@ -71,7 +71,6 @@ public class UOW_DataBase extends UOW{
             executeStatement();
         }catch(NullPointerException e) {
             failed = -10;
-            //System.out.println("NullPointerException");
         }catch(SQLException se) {
             //se.printStackTrace();
             failed = -10;

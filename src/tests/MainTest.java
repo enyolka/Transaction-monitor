@@ -134,12 +134,13 @@ class MainTest {
         this.transactionMonitor.addDataBase(this.db2);
         this.transactionMonitor.addWebService(this.ws);
 
+        this.ws.addStatement("add?id=" + 120 + "&name=Shrek&address=Zasiedmiogrod");
         for (int i = 20; i < 25; i++) {
             this.db1.addStatement("INSERT INTO users VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
             this.db2.addStatement("INSERT INTO users2 VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
         }
         //Same Key on WebService
-        for (int i = 5; i < 10; i++) {
+        for (int i = 110; i < 125; i++) {
             this.ws.addStatement("add?id=" + i + "&name=Shrek&address=Zasiedmiogrod");
         }
 
