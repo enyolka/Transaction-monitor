@@ -76,7 +76,7 @@ public class UOW_WebService extends UOW{
                 int responseCode = connection.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK){
                     failed = -10;
-                }else{
+                } else{
                     BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String inputLine;
                     StringBuilder response = new StringBuilder();

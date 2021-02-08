@@ -39,7 +39,7 @@ class MainTest {
         this.transactionMonitor.startTransaction();
     }
 
-    void testEmptyStatement() {
+    void testEmptyStatementDataBase() {
         this.setUp();
         this.transactionMonitor.addDataBase(this.db1);
         this.transactionMonitor.addDataBase(this.db2);
@@ -55,12 +55,26 @@ class MainTest {
         this.transactionMonitor.startTransaction();
     }
 
+    void testEmptyStatementWebService() {
+        this.setUp();
+        this.transactionMonitor.addDataBase(this.db1);
+        this.transactionMonitor.addDataBase(this.db2);
+        this.transactionMonitor.addWebService(this.ws);
+
+        for (int i = 100; i < 105; i++) {
+            this.db1.addStatement("INSERT INTO users VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
+            this.db2.addStatement("INSERT INTO users2 VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
+        }
+
+        this.transactionMonitor.startTransaction();
+    }
+
     void testReverseOrder() {
         this.setUp();
         this.transactionMonitor.addWebService(this.ws);
         this.transactionMonitor.addDataBase(this.db1);
         this.transactionMonitor.addDataBase(this.db2);
-        for (int i = 10; i < 15; i++) {
+        for (int i = 5; i < 7; i++) {
             this.ws.addStatement("delete?id=" + i);
         }
         //Same Key for DataBase 1 and 2
@@ -81,7 +95,7 @@ class MainTest {
             this.db1.addStatement("UPDATE users SET name = 'user_change" + i + "'WHERE ID = '" + i + "';");
             this.db_failed.addStatement("INSERT INTO users2 VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
         }
-        for (int i = 10; i < 15; i++) {
+        for (int i = 5; i < 10; i++) {
             this.ws.addStatement("update?id=" + i + "&name=Shrek_change&address=Zasiedmiogrod_change");
         }
 
@@ -165,16 +179,17 @@ class MainTest {
         MainTest test = new MainTest();
         System.out.println("Testing successful - adding objects to databases and web service");
         test.testSuccessful();
-        System.out.println("Select what you want to test: \n 1 - testEmptyStatement \n 2 - testReverseOrder \n 3 - testWrongDataBasePassword \n " +
-                "4 - testWrongWebServiceURL \n 5 - testSameKeyDataBase \n 6 - testSameKeyWebService \n 7 - testWrongStatementDataBase \n 0 - exit");
+        System.out.println("Select what you want to test: \n 1 - testEmptyStatementDataBase \n 2 - testReverseOrder \n 3 - testWrongDataBasePassword \n " +
+                "4 - testWrongWebServiceURL \n 5 - testSameKeyDataBase \n 6 - testSameKeyWebService \n 7 - testWrongStatementDataBase \n " +
+                "8 - testEmptyStatementWebService \n 0 - exit");
         Scanner sc = new Scanner(System.in);
         while (sc.hasNext()) {
             switch (sc.nextInt()) {
                 case 0:
                     return;
                 case 1:
-                    System.out.println("Testing empty statement");
-                    test.testEmptyStatement();
+                    System.out.println("Testing empty statement database");
+                    test.testEmptyStatementDataBase();
                     break;
                 case 2:
                     System.out.println("Testing reverse order");
@@ -200,9 +215,14 @@ class MainTest {
                     System.out.println("Testing wrong statement on database");
                     test.testWrongStatementDataBase();
                     break;
+                case 8:
+                    System.out.println("Testing empty statement on web service");
+                    test.testEmptyStatementWebService();
+                    break;
             }
-            System.out.println("Select what you want to test: \n 1 - testEmptyStatement \n 2 - testReverseOrder \n 3 - testWrongDataBasePassword \n " +
-                    "4 - testWrongWebServiceURL \n 5 - testSameKeyDataBase \n 6 - testSameKeyWebService \n 7 - testWrongStatementDataBase \n 0 - exit");
+            System.out.println("Select what you want to test: \n 1 - testEmptyStatementDataBase \n 2 - testReverseOrder \n 3 - testWrongDataBasePassword \n " +
+                    "4 - testWrongWebServiceURL \n 5 - testSameKeyDataBase \n 6 - testSameKeyWebService \n 7 - testWrongStatementDataBase \n " +
+                    "8 - testEmptyStatementWebService \n 0 - exit");
         }
     }
 

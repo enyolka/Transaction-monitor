@@ -88,7 +88,7 @@ public class Coordinator {
                     if(result == 20){
                          TransactionWrapperList.get(i).mode = 5;
                     }
-                    else if(result == -20){
+                    else if(result == -20 || result == 30 || result == -30){
                          for (TransactionWrapper transactionWrapper : TransactionWrapperList) {
                               if (transactionWrapper.hasCommit == Boolean.TRUE) {
                                    transactionWrapper.mode = 4;
@@ -100,34 +100,7 @@ public class Coordinator {
                          }
                          break;
                     }
-                    else if(result == 30){
-                         for (TransactionWrapper transactionWrapper : TransactionWrapperList) {
-                              if (transactionWrapper.hasCommit == Boolean.TRUE) {
-                                   transactionWrapper.mode = 4;
-                              } else if (transactionWrapper.uow instanceof UOW_WebService){
-                                   transactionWrapper.mode = 4;
-                              } else {
-                                   transactionWrapper.mode = 5;
-                              }
-                         }
-                         break;
-                    }
-                    else if(result == -30){
-                         for (TransactionWrapper transactionWrapper : TransactionWrapperList) {
-                              if (transactionWrapper.hasCommit == Boolean.TRUE) {
-                                   transactionWrapper.mode = 4;
-                              } else if (transactionWrapper.uow instanceof UOW_WebService){
-                                   transactionWrapper.mode = 4;
-                              } else {
-                                   transactionWrapper.mode = 5;
-                              }
-                         }
-                         break;
-                    }
-                    else if(result == 50 || result == -50){
-                         TransactionWrapperList.get(i).mode = 0;
-                    }
-                    else if(result == 0){
+                    else if(result == 50 || result == -50 || result == 0){
                          TransactionWrapperList.get(i).mode = 0;
                     }
                     else{
