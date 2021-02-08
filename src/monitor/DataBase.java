@@ -89,7 +89,6 @@ public class DataBase{
         this.USER = user;
         this.PASS = password;
         this.DB_URL = url;
-
     }
 
     /**
@@ -101,37 +100,6 @@ public class DataBase{
         statementsList.add(statement);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        DataBase other = (DataBase) obj;
-        if (JDBC_DRIVER == null) {
-            if (other.JDBC_DRIVER != null)
-                return false;
-        } else if (!JDBC_DRIVER.equals(other.JDBC_DRIVER))
-            return false;
-        if (DB_URL == null) {
-            if (other.DB_URL != null)
-                return false;
-        } else if (!DB_URL.equals(other.DB_URL))
-            return false;
-        if (USER == null) {
-            if (other.USER != null)
-                return false;
-        } else if (!USER.equals(other.USER))
-            return false;
-        if (PASS == null) {
-            if (other.PASS != null)
-                return false;
-        } else if (!PASS.equals(other.PASS))
-            return false;
-        return true;
-    }
     /**
      * Sets statements list.
      *

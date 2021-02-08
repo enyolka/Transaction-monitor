@@ -158,7 +158,6 @@ public class UOW_WebService extends UOW{
 
                 String new_url = this.webService.getURL() + "getId" + id;
                 URL statement_url = new URL(new_url);
-//                System.out.println(new_url);
                 try {
                     connection = (HttpURLConnection) statement_url.openConnection();
                     connection.setRequestMethod("POST");
@@ -187,7 +186,6 @@ public class UOW_WebService extends UOW{
                             String[] r = row.split(",");
 
                             List<Object> values = new ArrayList<Object>(Arrays.asList(r));
-//                            System.out.println(values);
 
                             if (statement.startsWith("delete")) {
                                 register_delete(values);

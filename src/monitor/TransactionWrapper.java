@@ -47,7 +47,7 @@ public class TransactionWrapper implements Callable<Integer> {
      *
      * @return the status as integer value, 10 for success, -10 for fail
      */
-    Integer startTransaction (  ){
+    Integer startTransaction (){
         int status1phase;
         int status = uow.startTransaction();
 
@@ -77,7 +77,7 @@ public class TransactionWrapper implements Callable<Integer> {
      *
      * @return the status as integer value, 30 for success, -30 for fail
      */
-    Integer rollback (  ){
+    Integer rollback (){
         return uow.rollback();
     }
 
@@ -87,7 +87,7 @@ public class TransactionWrapper implements Callable<Integer> {
      * @return the status as integer value, 40 for success, -40 for fail
      * @throws SQLException the sql exception
      */
-    Integer rollback2phase (  ) throws SQLException {
+    Integer rollback2phase () throws SQLException {
         return uow.rollback2phase();
     }
 
@@ -97,7 +97,7 @@ public class TransactionWrapper implements Callable<Integer> {
      * @return the status as integer value, 50 for success, -50 for fail
      *
      */
-    Integer finalizeTransaction (  ){
+    Integer finalizeTransaction (){
         return uow.finalizeTransaction();
     }
 

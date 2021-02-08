@@ -2,11 +2,7 @@ package tests;
 
 import monitor.DataBase;
 import monitor.TransactionMonitor;
-import monitor.TransactionWrapper;
 import monitor.WebService;
-
-import javax.management.monitor.Monitor;
-import java.util.Map;
 import java.util.Scanner;
 
 class MainTest {
@@ -17,12 +13,12 @@ class MainTest {
     WebService ws;
     WebService ws_failed;
 
-    void setUp(){
+    void setUp() {
         this.transactionMonitor = new TransactionMonitor();
         this.db1 = new DataBase("danwarlo", "ESibZTBDZSXKKrPy", "jdbc:mysql://mysql.agh.edu.pl:3306/danwarlo");
         this.db2 = new DataBase("danwarl2", "u8YNn32Zr5F8VLUx", "jdbc:mysql://mysql.agh.edu.pl:3306/danwarl2");
         this.db_failed = new DataBase("danwarl2", "u8YNn32Zr5F8VLUx99999", "jdbc:mysql://mysql.agh.edu.pl:3306/danwarl2");
-        this.ws =  new WebService("http://127.0.0.1:8080/");
+        this.ws = new WebService("http://127.0.0.1:8080/");
         this.ws_failed = new WebService("http://127.0.0.1:8090/");
     }
 
@@ -59,7 +55,7 @@ class MainTest {
         this.transactionMonitor.startTransaction();
     }
 
-    void testReverseOrder(){
+    void testReverseOrder() {
         this.setUp();
         this.transactionMonitor.addWebService(this.ws);
         this.transactionMonitor.addDataBase(this.db1);
@@ -75,7 +71,7 @@ class MainTest {
         transactionMonitor.startTransaction();
     }
 
-    void testWrongDataBasePassword(){
+    void testWrongDataBasePassword() {
         this.setUp();
         this.transactionMonitor.addDataBase(this.db1);
         this.transactionMonitor.addDataBase(this.db_failed);
@@ -92,7 +88,7 @@ class MainTest {
         transactionMonitor.startTransaction();
     }
 
-    void testWrongWebServiceURL(){
+    void testWrongWebServiceURL() {
         this.setUp();
         this.transactionMonitor.addDataBase(this.db1);
         this.transactionMonitor.addDataBase(this.db2);
@@ -108,7 +104,7 @@ class MainTest {
         transactionMonitor.startTransaction();
     }
 
-    void testSameKeyDataBase(){
+    void testSameKeyDataBase() {
         this.setUp();
         this.transactionMonitor.addDataBase(this.db1);
         this.transactionMonitor.addDataBase(this.db2);
@@ -118,7 +114,7 @@ class MainTest {
         for (int i = 7; i < 12; i++) {
             this.db1.addStatement("INSERT INTO users VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
         }
-        for (int i=1; i<10; i++) {
+        for (int i = 1; i < 10; i++) {
             this.db2.addStatement("DELETE FROM users2 WHERE ID = " + i + ";");
         }
         for (int i = 25; i < 30; i++) {
@@ -128,7 +124,7 @@ class MainTest {
         transactionMonitor.startTransaction();
     }
 
-    void testSameKeyWebService(){
+    void testSameKeyWebService() {
         this.setUp();
         this.transactionMonitor.addDataBase(this.db1);
         this.transactionMonitor.addDataBase(this.db2);
@@ -147,13 +143,13 @@ class MainTest {
         transactionMonitor.startTransaction();
     }
 
-    void testWrongStatementDataBase(){
+    void testWrongStatementDataBase() {
         this.setUp();
         this.transactionMonitor.addDataBase(this.db1);
         this.transactionMonitor.addDataBase(this.db2);
         this.transactionMonitor.addWebService(this.ws);
 
-        for (int i = 20; i < 25; i++){
+        for (int i = 20; i < 25; i++) {
             this.db1.addStatement("INSERT INTO users VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
             //Wrong Statement on Database 2
             this.db2.addStatement("INSERT INTOO users2 VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
@@ -172,8 +168,8 @@ class MainTest {
         System.out.println("Select what you want to test: \n 1 - testEmptyStatement \n 2 - testReverseOrder \n 3 - testWrongDataBasePassword \n " +
                 "4 - testWrongWebServiceURL \n 5 - testSameKeyDataBase \n 6 - testSameKeyWebService \n 7 - testWrongStatementDataBase \n 0 - exit");
         Scanner sc = new Scanner(System.in);
-        while(sc.hasNext()) {
-            switch (sc.nextInt()){
+        while (sc.hasNext()) {
+            switch (sc.nextInt()) {
                 case 0:
                     return;
                 case 1:

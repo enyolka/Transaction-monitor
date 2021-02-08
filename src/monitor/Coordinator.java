@@ -104,6 +104,8 @@ public class Coordinator {
                          for (TransactionWrapper transactionWrapper : TransactionWrapperList) {
                               if (transactionWrapper.hasCommit == Boolean.TRUE) {
                                    transactionWrapper.mode = 4;
+                              } else if (transactionWrapper.uow instanceof UOW_WebService){
+                                   transactionWrapper.mode = 4;
                               } else {
                                    transactionWrapper.mode = 5;
                               }
@@ -120,7 +122,6 @@ public class Coordinator {
                                    transactionWrapper.mode = 5;
                               }
                          }
-                         //TransactionWrapperList.get(i).mode = 4;
                          break;
                     }
                     else if(result == 50 || result == -50){
