@@ -17,7 +17,7 @@ class MainTest {
         this.transactionMonitor = new TransactionMonitor();
         this.db1 = new DataBase("danwarlo", "ESibZTBDZSXKKrPy", "jdbc:mysql://mysql.agh.edu.pl:3306/danwarlo");
         this.db2 = new DataBase("danwarl2", "u8YNn32Zr5F8VLUx", "jdbc:mysql://mysql.agh.edu.pl:3306/danwarl2");
-        this.db_failed = new DataBase("danwarl2", "u8YNn32Zr5F8VLUx99999", "jdbc:mysql://mysql.agh.edu.pl:3306/danwarl2");
+        this.db_failed = new DataBase("danwarl2", "u8YNn32Zr5F8VLUx", "jdbc:mysql://mysql.agh.edu.pl:3306/danwarl2");
         this.ws = new WebService("http://127.0.0.1:8080/");
         this.ws_failed = new WebService("http://127.0.0.1:8090/");
     }
@@ -91,9 +91,9 @@ class MainTest {
         this.transactionMonitor.addDataBase(this.db_failed);
         this.transactionMonitor.addWebService(this.ws);
 
-        for (int i = 15; i < 20; i++) {
+        for (int i = 1; i < 10; i++) {
             this.db1.addStatement("UPDATE users SET name = 'user_change" + i + "'WHERE ID = '" + i + "';");
-            this.db_failed.addStatement("INSERT INTO users2 VALUES(" + i + ",'user" + i + "','login" + i + "','pass" + i + "');");
+            this.db_failed.addStatement("UPDATE users2 SET user2 = 'user" + 6 + "' WHERE ID '" + i + "';");
         }
         for (int i = 5; i < 10; i++) {
             this.ws.addStatement("update?id=" + i + "&name=Shrek_change&address=Zasiedmiogrod_change");

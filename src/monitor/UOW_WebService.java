@@ -15,7 +15,7 @@ import java.io.BufferedReader;
 /**
  * The type UOW_WebService.
  * Class is responsible for the correct execution of operations on the web service.
- * It implements the web service methods and provides mechanism fos saving changes
+ * It implements the web service methods and provides mechanism for saving changes
  */
 public class UOW_WebService extends UOW{
 
